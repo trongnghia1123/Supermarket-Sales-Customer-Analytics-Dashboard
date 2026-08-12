@@ -1,423 +1,508 @@
-# Supermarket-Sales-Customer-Analytics-Dashboard
+# Supermarket Sales Customer Analytics Dashboard
 
-> **Data Analyst Portfolio Project — Sales & Business Performance Analysis**
+> **Dự án Data Analyst — Phân tích hiệu suất bán hàng bán lẻ bằng Power BI**
 
-An end-to-end **Data Analyst project** focused on analyzing retail sales performance, customer behavior, product performance, transaction patterns, and customer satisfaction using **Excel, Power Query, Power BI, and a Star Schema data model**.
+Dự án thực hiện phân tích dữ liệu bán hàng bán lẻ nhằm đánh giá **doanh thu, hiệu suất sản phẩm, hành vi khách hàng, thời điểm mua hàng và mức độ hài lòng của khách hàng**.
 
-The project demonstrates the complete analytical workflow from **data exploration and transformation to dashboard development, insight generation, and business recommendations**.
+Thay vì chỉ tập trung vào việc xây dựng biểu đồ, dự án được thực hiện theo một quy trình phân tích hoàn chỉnh:
 
----
+**EDA → ETL → Data Modeling → KPI → Business Questions → Visualization → Insight → Recommendation**
 
-## 🎯 Project Overview
-
-This project analyzes a retail sales dataset covering **1,000 transactions across 3 cities during the first three months of 2019**.
-
-The main objective is to answer key business questions such as:
-
-* How is sales performance changing over time?
-* Which cities and product categories contribute most to sales?
-* When are the peak purchasing periods?
-* How do customer types and demographics differ across locations?
-* Which product categories or locations have lower customer ratings?
-* What business actions could be considered based on the observed patterns?
-
-Rather than focusing only on visualization, the project follows a structured **EDA → ETL → Data Modeling → KPI → Analysis → Insight → Recommendation** workflow.
+Mục tiêu là chuyển đổi dữ liệu giao dịch thô thành **thông tin có cấu trúc, insight có ý nghĩa và các đề xuất có thể hỗ trợ quyết định kinh doanh**.
 
 ---
 
-## 📌 Key Results
+## 📸 Dashboard Preview
 
-| Metric                   |             Result |
-| ------------------------ | -----------------: |
-| 💰 Total Sales           |      **~$322,967** |
-| 📦 Transactions          |          **1,000** |
-| 🧾 Average Invoice Value |       **~$322.97** |
-| 📈 Gross Income          |       **~$15,379** |
-| ⭐ Average Rating         |      **6.97 / 10** |
-| 🏙️ Cities               |              **3** |
-| 🛍️ Product Lines        |              **6** |
-| 📅 Analysis Period       | **Jan – Mar 2019** |
+![Retail Sales Performance Dashboard](./assets/dashboard.png)
 
-### Key findings
+> **Interactive dashboard:** `Retail Sales Performance Analysis.pbix`
 
-* **January** recorded the highest sales, while **February** had the lowest sales before recovering in March.
-* **19:00** was the strongest sales hour, followed by **13:00**.
-* **Food and Beverages** generated the highest overall sales at approximately **$56K**.
-* Product performance was relatively balanced, with the difference between the highest- and lowest-performing product lines being relatively small.
-* Product preferences varied across cities, suggesting that customer demand is not completely homogeneous across locations.
-* **Da Nang** recorded the lowest average customer rating among the three cities.
-* **Home and Lifestyle** showed a relatively high concentration of lower ratings and therefore warrants further investigation.
-
-> **Note:** Some findings represent signals or hypotheses that require additional historical, product-level, or operational data for further validation. The analysis intentionally avoids treating correlations as confirmed causal relationships.
+Dashboard được xây dựng bằng Power BI, cho phép người dùng theo dõi tổng quan hiệu suất bán hàng và phân tích dữ liệu theo nhiều chiều như **thời gian, thành phố, nhóm sản phẩm, loại khách hàng, giới tính và rating**.
 
 ---
 
-# 🔎 Analytical Approach
+# 🎯 1. Tổng quan dự án
 
-The project follows five main stages.
+Dataset bao gồm **1.000 giao dịch bán hàng** tại **3 thành phố** trong **3 tháng đầu năm 2019**.
 
-### 1. Exploratory Data Analysis — EDA
+Dự án tập trung trả lời các câu hỏi kinh doanh như:
 
-The original CSV dataset was reviewed and a separate Excel copy was used for initial exploration.
-
-The EDA process included:
-
-* Understanding the meaning and relationships between fields
-* Reviewing the dataset structure
-* Checking data types and formats
-* Identifying missing values
-* Checking potential duplicate records
-* Understanding the expected grain of the transaction table
-* Reviewing business metrics and possible analytical dimensions
+* Doanh thu thay đổi như thế nào theo từng tháng?
+* Thành phố nào có số lượng giao dịch và doanh thu cao nhất?
+* Khung giờ nào khách hàng mua hàng nhiều nhất?
+* Nhóm sản phẩm nào đóng góp nhiều doanh thu nhất?
+* Hành vi mua hàng có khác nhau giữa các thành phố và phân khúc khách hàng không?
+* Rating thấp có tập trung ở một số nhóm sản phẩm hoặc khu vực nhất định không?
+* Những phát hiện trên có thể dẫn đến hành động kinh doanh nào?
 
 ---
 
-### 2. Data Transformation & ETL
+# 📌 2. Kết quả tổng quan
 
-**Power Query** was used to perform the ETL process.
+| Chỉ số                      |          Kết quả |
+| --------------------------- | ---------------: |
+| 💰 Tổng doanh thu           | **~322.967 USD** |
+| 🧾 Số lượng giao dịch       |        **1.000** |
+| 💵 Giá trị trung bình / đơn |  **~322,97 USD** |
+| 📈 Gross Income             |  **~15.379 USD** |
+| ⭐ Rating trung bình         |    **6,97 / 10** |
+| 🏙️ Số thành phố            |            **3** |
+| 🛍️ Số nhóm sản phẩm        |            **6** |
+| 📅 Thời gian phân tích      |   **01–03/2019** |
 
-The main fact table was transformed and supported by three dimension tables:
+---
+
+# 🔎 3. Các insight chính
+
+### 📅 Theo tháng
+
+Tháng 1 ghi nhận doanh thu cao nhất, khoảng **116.291 USD**, trong khi tháng 2 giảm xuống khoảng **97.219 USD** trước khi phục hồi vào tháng 3.
+
+Mức biến động giữa các tháng không quá lớn, do đó chưa cho thấy dấu hiệu bất thường rõ rệt trong dữ liệu.
+
+> **Lưu ý:** Dataset chỉ bao gồm 3 tháng nên chưa đủ dữ liệu để khẳng định nguyên nhân của biến động theo mùa. Cần dữ liệu lịch sử dài hơn để kiểm chứng giả thuyết về seasonality.
+
+---
+
+### 🕐 Theo khung giờ
+
+Doanh thu tập trung cao nhất vào khoảng **19:00 (~40.000 USD)**, tiếp theo là **13:00 (~35.000 USD)**.
+
+Khoảng thời gian **13:00–15:00** cũng duy trì mức doanh thu tương đối cao và ổn định.
+
+Điều này cho thấy đây có thể là những thời điểm quan trọng để doanh nghiệp theo dõi về:
+
+* Lưu lượng giao dịch
+* Nhân sự phục vụ
+* Hoạt động marketing
+* Chương trình khuyến mãi
+* Khả năng đáp ứng vận hành
+
+---
+
+### 🛍️ Theo nhóm sản phẩm
+
+**Food and Beverages** là nhóm có doanh thu cao nhất, khoảng **56.145 USD**, theo sau là **Sports and Travel** với khoảng **55.123 USD**.
+
+Nhóm có doanh thu thấp nhất là **Health and Beauty**, khoảng **49.194 USD**.
+
+Khoảng cách giữa nhóm cao nhất và thấp nhất chỉ khoảng **13%**, cho thấy doanh thu được phân bổ tương đối đồng đều giữa các nhóm sản phẩm thay vì phụ thuộc quá lớn vào một category duy nhất.
+
+Ngoài ra, nhóm sản phẩm dẫn đầu có sự khác biệt giữa các thành phố:
+
+* **TP. Hồ Chí Minh:** Home and Lifestyle
+* **Đà Nẵng:** Sports and Travel
+
+Điều này cho thấy nhu cầu sản phẩm có thể khác nhau theo từng khu vực và phân khúc khách hàng.
+
+---
+
+### ⭐ Theo rating
+
+Rating trung bình toàn hệ thống đạt khoảng **6,97/10**.
+
+**Đà Nẵng** có rating trung bình thấp nhất trong 3 thành phố, khoảng **6,82/10**.
+
+Theo nhóm sản phẩm, **Home and Lifestyle** có tỷ trọng tương đối cao trong nhóm rating thấp.
+
+Đây là những tín hiệu cần được tiếp tục kiểm tra thay vì kết luận trực tiếp về nguyên nhân, chẳng hạn thông qua:
+
+* Feedback của khách hàng
+* Product-level analysis
+* Chất lượng sản phẩm
+* Customer service
+* Hiệu suất từng chi nhánh
+* Dữ liệu vận hành
+
+---
+
+# 💡 4. Business Recommendations
+
+Dựa trên các pattern quan sát được trong dữ liệu, dự án đưa ra ba hướng hành động chính:
+
+### 1. Rà soát Home and Lifestyle
+
+Kiểm tra sâu hơn các sản phẩm và giao dịch thuộc nhóm **Home and Lifestyle**, đặc biệt những transaction có rating thấp, để xác định liệu vấn đề đến từ sản phẩm, kỳ vọng khách hàng hay trải nghiệm dịch vụ.
+
+### 2. Theo dõi hiệu suất tại Đà Nẵng
+
+Đà Nẵng có rating trung bình thấp nhất, do đó nên được ưu tiên phân tích sâu hơn về:
+
+* Customer feedback
+* Product mix
+* Sales performance
+* Service quality
+* Operational performance
+
+### 3. Tối ưu nguồn lực trong giờ cao điểm
+
+Doanh thu tập trung mạnh vào khoảng **13:00 và 19:00**, doanh nghiệp có thể xem xét bố trí nhân sự và năng lực vận hành phù hợp với các khung giờ này.
+
+Đồng thời có thể đánh giá khả năng triển khai các chương trình marketing hoặc promotion vào thời điểm có lượng khách hàng cao.
+
+> Các recommendation trên được xây dựng dựa trên các tín hiệu quan sát được từ dataset. Những giả thuyết về nguyên nhân cần được kiểm chứng bằng dữ liệu lịch sử, dữ liệu sản phẩm chi tiết hoặc dữ liệu vận hành bổ sung.
+
+---
+
+# 🧠 5. Analytical Approach
+
+Dự án được thực hiện theo 5 giai đoạn chính.
+
+## 5.1 Exploratory Data Analysis — EDA
+
+Dữ liệu gốc được cung cấp dưới dạng CSV và được sao chép sang một file Excel riêng để phục vụ quá trình khám phá dữ liệu.
+
+Trước khi phân tích, các trường dữ liệu được tìm hiểu dựa trên Dataset Description nhằm:
+
+* Hiểu ý nghĩa của từng trường
+* Xác định mối quan hệ giữa các trường dữ liệu
+* Kiểm tra kiểu dữ liệu
+* Phát hiện giá trị trống
+* Kiểm tra định dạng dữ liệu
+* Kiểm tra các bản ghi có khả năng trùng lặp
+* Xác định grain của dữ liệu giao dịch
+
+---
+
+## 5.2 Data Transformation & ETL
+
+**Power Query trong Power BI** được sử dụng để thực hiện quy trình ETL.
+
+Từ bảng dữ liệu giao dịch chính, các bảng dimension được xây dựng để hỗ trợ quá trình phân tích:
+
+* **Fact Sales**
+* **Dim Date**
+* **Dim Time**
+* **Dim Rating**
+
+Một số bước xử lý bao gồm:
+
+* Chuẩn hóa kiểu dữ liệu
+* Kiểm tra và xử lý duplicate
+* Tạo các trường ngày và tháng
+* Tạo các trường giờ và buổi trong ngày
+* Phân nhóm rating
+* Sắp xếp tháng theo đúng thứ tự thời gian
+* Sắp xếp các khung giờ theo trình tự thực tế
+
+---
+
+# 🏗️ 5.3 Data Modeling
+
+Mô hình dữ liệu được xây dựng theo **Star Schema**.
 
 ```text
-                    ┌─────────────┐
-                    │  Dim Date   │
-                    └──────┬──────┘
-                           │
-                           │
-┌─────────────┐     ┌──────▼──────┐     ┌─────────────┐
-│  Dim Time   │────▶│  Fact Sales │◀────│ Dim Rating  │
-└─────────────┘     └─────────────┘     └─────────────┘
+                    ┌──────────────┐
+                    │   Dim Date   │
+                    └───────┬──────┘
+                            │
+                            │
+┌──────────────┐     ┌─────▼──────┐     ┌──────────────┐
+│   Dim Time   │────▶│ Fact Sales │◀────│  Dim Rating  │
+└──────────────┘     └────────────┘     └──────────────┘
 ```
 
-Transformations included:
+Trong đó:
 
-* Data type standardization
-* Duplicate validation and removal where appropriate
-* Creation of time-related attributes
-* Creation of date/month attributes
-* Rating grouping
-* Correct chronological sorting of month names
-* Correct ordering of time-of-day categories
+### Fact Sales
 
----
+Chứa dữ liệu giao dịch và các measure business như:
 
-### 3. Data Modeling
-
-A **Star Schema** was implemented in Power BI.
-
-The model consists of:
-
-* **Fact Sales** — transaction-level business data
-* **Dim Date** — date and month attributes
-* **Dim Time** — hour and time-of-day attributes
-* **Dim Rating** — rating categories
-
-This structure allows the dashboard to perform flexible slicing and aggregation across different business dimensions while keeping the model organized and scalable.
-
----
-
-### 4. KPI & Business Questions
-
-Core KPIs were defined before dashboard development:
-
-* Total Sales
+* Sales
+* Quantity
+* Tax
 * Gross Income
-* Number of Invoices
-* Average Invoice Value
-* Average Customer Rating
+* Rating
 
-The dashboard was then designed around specific analytical questions rather than simply creating visuals from available fields.
+### Dim Date
 
-Examples:
+Chứa các thuộc tính liên quan đến:
 
-> Which month generates the highest sales?
+* Date
+* Month
+* Month Name
 
-> Which product lines perform best?
+### Dim Time
 
-> Which cities have the highest transaction volume?
+Chứa:
 
-> What are the peak purchasing hours?
+* Hour
+* Time of Day
 
-> Are lower customer ratings concentrated in particular products, cities, or time periods?
+### Dim Rating
 
----
+Dùng để phân nhóm mức độ đánh giá của khách hàng.
 
-### 5. Visualization, Insight & Recommendation
-
-Power BI was used to transform the analytical results into an interactive sales dashboard.
-
-The analysis covers:
-
-* Monthly sales performance
-* Sales by city
-* Customer type
-* Gender
-* Payment method
-* Product line
-* Time of day
-* Customer ratings
-* City-level performance
-
-The final stage connects observed patterns with potential business actions while distinguishing between **data-supported findings and hypotheses requiring further validation**.
+Việc sử dụng Star Schema giúp mô hình dữ liệu dễ quản lý và thuận tiện cho việc phân tích theo nhiều dimension khác nhau.
 
 ---
 
-# 📊 Dashboard
+# 📊 5.4 KPI & Business Questions
 
-The Power BI dashboard provides an interactive overview of retail sales performance.
+Các KPI chính được xác định trước khi xây dựng dashboard:
 
-### Main dashboard sections
+* **Total Sales**
+* **Gross Income**
+* **Invoice Count**
+* **Average Invoice Value**
+* **Average Rating**
 
-**Executive KPIs**
+Các KPI được kết hợp với những câu hỏi kinh doanh cụ thể.
 
-* Total Sales
+Ví dụ:
+
+> **Tháng nào có doanh thu cao nhất?**
+
+→ Phân tích Sales theo Month.
+
+> **Khung giờ nào có doanh thu cao nhất?**
+
+→ Phân tích Sales theo Hour.
+
+> **Nhóm sản phẩm nào đóng góp nhiều doanh thu nhất?**
+
+→ Phân tích Sales theo Product Line.
+
+> **Rating thấp có tập trung ở một số khu vực hoặc sản phẩm không?**
+
+→ Phân tích Rating theo City và Product Line.
+
+Cách tiếp cận này giúp đảm bảo mỗi visual được xây dựng để trả lời một câu hỏi phân tích cụ thể.
+
+---
+
+# 📈 5.5 Visualization & Insight
+
+Dashboard được thiết kế để phân tích:
+
+### Sales Performance
+
+* Tổng doanh thu
 * Gross Income
 * Invoice Count
 * Average Invoice
+* Doanh thu theo tháng
+* Doanh thu theo thành phố
+* Doanh thu theo nhóm sản phẩm
+
+### Customer Analysis
+
+* Gender
+* Customer Type
+* Payment Method
+* Customer Rating
+
+### Time Analysis
+
+* Sales theo giờ
+* Sales theo buổi trong ngày
+* Monthly performance
+
+### Geographic Analysis
+
+* City performance
+* Invoice volume
+* Gross Income
 * Average Rating
 
-**Sales Analysis**
-
-* Monthly sales and invoice trends
-* Sales by city
-* Sales by product line
-* Sales by time of day
-
-**Customer Analysis**
-
-* Customer type
-* Gender
-* Payment method
-* Customer ratings
-
-**Performance Detail**
-
-* City-level sales
-* Invoice volume
-* Gross income
-* Average rating
-
-The dashboard can be filtered dynamically by dimensions such as:
-
-* Month
-* City
-* Gender
-* Product Line
-* Customer Type
-* Rating
+Sau khi xây dựng visual, các pattern được kiểm tra và đối chiếu trước khi sử dụng làm insight hoặc recommendation.
 
 ---
 
-# 💡 Business Insights & Recommendations
-
-Several findings were identified during the analysis.
-
-### 1. Monthly Sales
-
-January generated the highest sales at approximately **$116K**, while February recorded the lowest at approximately **$97K**.
-
-Although February showed a decline, the overall variation across the three months was not extreme.
-
-**Potential action:**
-Monitor historically weaker periods and consider targeted promotional campaigns to stimulate demand.
-
-> The dataset covers only three months, so additional historical data would be required to confirm whether the February decline is driven by seasonality.
-
----
-
-### 2. Peak Sales Hours
-
-Sales were concentrated around **13:00 and 19:00**, with 19:00 generating approximately **$40K** in sales.
-
-**Potential action:**
-Consider aligning promotional activities, staffing levels, and operational capacity with peak purchasing periods.
-
----
-
-### 3. Product Line Performance
-
-**Food and Beverages** generated the highest overall sales at approximately **$56K**, followed closely by **Sports and Travel**.
-
-However, the difference between the highest- and lowest-performing product lines was relatively small, suggesting that sales were distributed fairly evenly across categories.
-
-**Potential action:**
-Avoid relying solely on overall sales ranking. Further analysis of margin, quantity, SKU-level performance, and customer segments could identify more meaningful opportunities.
-
----
-
-### 4. Geographic Differences
-
-The leading product category differs across cities.
-
-For example:
-
-* **Ho Chi Minh City:** Home and Lifestyle
-* **Da Nang:** Sports and Travel
-
-This suggests that product preferences may vary by location.
-
-**Potential action:**
-Consider localized product and marketing strategies rather than applying the same category strategy across all markets.
-
-> Additional customer demographic and historical data would be useful to validate the underlying reasons for these differences.
-
----
-
-### 5. Customer Rating
-
-The overall average rating was approximately **6.97/10**, with **Da Nang** recording the lowest city-level average rating at approximately **6.82**.
-
-Home and Lifestyle also showed a relatively high concentration of lower ratings.
-
-**Potential action:**
-Prioritize further investigation into customer feedback, product quality, service experience, and branch-level operations in these areas.
-
----
-
-# 📁 Repository Structure
+# 📂 6. Repository Structure
 
 ```text
 Retail-Sales-Performance-Analysis/
 │
+├── 📁 assets/
+│   └── 🖼️ dashboard.png
+│
+├── 📄 Additional notes.docx
+│
+├── 📖 README.md
+│
 ├── 📊 Retail Sales Performance Analysis.pbix
-│   └── Interactive Power BI dashboard and data model
 │
 ├── 📄 Summary document.docx
-│   └── Detailed analysis, key insights and business recommendations
 │
-├── 📝 Additional notes.docx
-│   └── Additional project methodology, analytical notes and supporting information
-│
-├── 📋 sale_data.csv
-│   └── Original retail transaction dataset
-│
-└── 📖 README.md
-    └── Project overview and documentation
+└── 📋 sale_data.csv
 ```
 
 ---
 
-# 📚 Project Documentation
+# 📚 7. Tài liệu chi tiết
 
-The README provides a concise overview of the project.
+README này cung cấp phần **tổng quan** về project.
 
-For a deeper understanding of the analytical process and findings, please refer to the supporting documents included in this repository:
+Nếu muốn tìm hiểu sâu hơn về quá trình thực hiện, analytical reasoning, insight và recommendation, hãy đọc thêm hai tài liệu được đính kèm trong repository.
 
-### 📄 [Summary document.docx](./Summary%20document.docx)
+### 📄 Summary document.docx
 
-Contains the **detailed analytical summary**, including:
+Đây là tài liệu tổng hợp kết quả phân tích, bao gồm:
 
-* Overall business performance
-* Key findings by month
-* Time-of-day analysis
-* Product line analysis
-* City-level analysis
-* Customer rating analysis
-* Business observations
-* Recommendations based on the findings
+* Tổng quan business performance
+* Phân tích theo tháng
+* Phân tích theo khung giờ
+* Phân tích product line
+* Phân tích theo thành phố
+* Phân tích rating
+* Các insight chính
+* Nhận xét
+* Business recommendations
 
-### 📝 [Additional notes.docx](./Additional%20notes.docx)
-
-Contains **additional project notes and supporting analysis**, providing more context behind the methodology and analytical decisions used throughout the project.
-
-> **Recommended reading order:**
-> **README → Summary document → Additional notes → Power BI dashboard**
+👉 **[Mở Summary document](./Summary%20document.docx)**
 
 ---
 
-# 🛠️ Tools & Technologies
+### 📝 Additional notes.docx
 
-| Tool            | Purpose                                                     |
-| --------------- | ----------------------------------------------------------- |
-| **Excel**       | Initial data exploration and validation                     |
-| **Power Query** | Data transformation and ETL                                 |
-| **Power BI**    | Data modeling, DAX, visualization and dashboard development |
-| **CSV**         | Source transaction data                                     |
-| **Star Schema** | Analytical data modeling                                    |
+Tài liệu này chứa các **ghi chú bổ sung và thông tin chi tiết hơn về quá trình thực hiện project**, giúp người đọc hiểu rõ hơn về các quyết định trong quá trình xử lý và phân tích dữ liệu.
+
+👉 **[Mở Additional notes](./Additional%20notes.docx)**
 
 ---
 
-# 📈 Skills Demonstrated
+### 📊 Power BI Dashboard
 
-This project demonstrates the following Data Analyst capabilities:
+File Power BI chứa:
 
-### Data Preparation
+* Data model
+* Power Query transformations
+* DAX calculations
+* Interactive dashboard
+* Filters / slicers
+* Visualizations
+
+👉 **[Mở Power BI file](./Retail%20Sales%20Performance%20Analysis.pbix)**
+
+> Cần **Microsoft Power BI Desktop** để mở file `.pbix`.
+
+---
+
+### 📋 Source Dataset
+
+Dataset giao dịch gốc được lưu trong file:
+
+👉 **[sale_data.csv](./sale_data.csv)**
+
+---
+
+# 🛠️ 8. Tools & Technologies
+
+| Công cụ         | Mục đích                             |
+| --------------- | ------------------------------------ |
+| **Excel**       | Khám phá và kiểm tra dữ liệu ban đầu |
+| **Power Query** | ETL và Data Transformation           |
+| **Power BI**    | Data Modeling, DAX và Visualization  |
+| **CSV**         | Dữ liệu nguồn                        |
+| **Star Schema** | Mô hình hóa dữ liệu phân tích        |
+
+---
+
+# 🎓 9. Skills Demonstrated
+
+## Data Analysis
 
 * Exploratory Data Analysis
 * Data quality checking
-* Data type validation
-* Duplicate handling
+* Business question formulation
+* KPI definition
+* Pattern identification
+* Insight generation
+* Business recommendation
+
+## Data Preparation
+
+* Data cleaning
 * Data transformation
+* Data type validation
+* Duplicate checking
 * ETL using Power Query
 
-### Data Modeling
+## Data Modeling
 
-* Fact and dimension table design
+* Fact & Dimension tables
 * Star Schema
-* Relationships between tables
-* Time-based analytical modeling
+* Table relationships
+* Time dimension
+* Analytical modeling
 
-### Business Analysis
+## Power BI
 
-* KPI definition
-* Business question formulation
-* Sales performance analysis
-* Customer segmentation
-* Product analysis
-* Geographic analysis
-* Time-based analysis
-* Customer satisfaction analysis
-
-### Data Visualization
-
-* Interactive Power BI dashboard
+* Interactive dashboard
+* DAX measures
 * KPI cards
-* Trend analysis
+* Slicers
+* Time-series analysis
 * Comparative analysis
 * Drill-down analysis
-* Slicers and dynamic filtering
+* Dynamic filtering
 
-### Analytical Thinking
+## Business Analysis
 
-* Identifying patterns and anomalies
-* Translating data into business insights
-* Distinguishing observations from hypotheses
-* Developing data-driven recommendations
+* Sales performance
+* Product performance
+* Customer behavior
+* Geographic analysis
+* Customer satisfaction
+* Time-based sales analysis
 
 ---
 
-# 🎯 Key Takeaway
+# 🔄 10. End-to-End Workflow
 
-This project demonstrates an end-to-end approach to solving a business analytics problem:
+Toàn bộ project có thể được tóm tắt như sau:
 
 ```text
-Raw Data
-   ↓
-EDA
-   ↓
-Data Cleaning & Transformation
-   ↓
-Data Modeling
-   ↓
-KPI Definition
-   ↓
-Business Questions
-   ↓
-Data Visualization
-   ↓
-Insight
-   ↓
-Business Recommendation
+                    RAW DATA
+                       │
+                       ▼
+                      EDA
+                       │
+                       ▼
+              DATA CLEANING
+                       │
+                       ▼
+                POWER QUERY
+                 ETL PROCESS
+                       │
+                       ▼
+                STAR SCHEMA
+                       │
+                       ▼
+               KPI DEFINITION
+                       │
+                       ▼
+             BUSINESS QUESTIONS
+                       │
+                       ▼
+               POWER BI VISUALS
+                       │
+                       ▼
+                    INSIGHT
+                       │
+                       ▼
+               RECOMMENDATION
 ```
-
-The goal is not simply to build a visually appealing dashboard, but to demonstrate how a Data Analyst can transform raw transaction data into **structured information, actionable insights, and potential business decisions**.
 
 ---
 
-## 👤 Project Type
+# 🎯 11. Project Takeaway
 
-**Data Analyst Portfolio Project**
+Điểm trọng tâm của project không chỉ là xây dựng một dashboard đẹp.
 
+Project hướng tới việc thể hiện một quy trình Data Analyst hoàn chỉnh:
+
+> **Từ dữ liệu thô → hiểu dữ liệu → chuẩn hóa dữ liệu → xây dựng mô hình → đặt câu hỏi kinh doanh → phân tích → tìm insight → đưa ra recommendation.**
+
+Qua project này, các kỹ năng được thể hiện không chỉ nằm ở **Power BI**, mà còn ở khả năng **tư duy phân tích, data modeling và chuyển đổi dữ liệu thành thông tin có giá trị cho business**.
+
+---
+
+## 👤 Project Information
+
+**Project Type:** Data Analyst Portfolio Project
 **Domain:** Retail / Sales / Business Performance
 **Dataset:** Retail Transaction Data
 **Analysis Period:** January – March 2019
@@ -425,4 +510,4 @@ The goal is not simply to build a visually appealing dashboard, but to demonstra
 
 ---
 
-⭐ **If you are reviewing this project, I recommend opening the `.pbix` file together with the `Summary document.docx` to see both the interactive dashboard and the analytical reasoning behind it.**
+⭐ **Nếu bạn đang review project này, hãy xem `Retail Sales Performance Analysis.pbix` cùng với `Summary document.docx` để có cái nhìn đầy đủ về cả dashboard và quá trình phân tích phía sau.**
